@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 export default function parseStories($) {
   const stories = [];
 
@@ -15,7 +19,7 @@ export default function parseStories($) {
       tags: tags,
       domain: $(element).find('.domain').text(),
       author: $(element).find('.byline a:nth-child(2)').text(),
-      authorProfile: `https://barnacl.es${$(element)
+      authorProfile: `${process.env.API_URL}${$(element)
         .find('.byline a:nth-child(2)')
         .attr('href')}`,
       commments: $(element)
@@ -23,7 +27,7 @@ export default function parseStories($) {
         .html()
         .replace(/\s+/g, ' ')
         .trim(),
-      commentsUrl: `https://barnacl.es${$(element)
+      commentsUrl: `${process.env.API_URL}${$(element)
         .find('.comments_label a')
         .attr('href')}`
     });

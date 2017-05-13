@@ -2,6 +2,9 @@ import cheerio from 'cheerio';
 import request from 'request';
 import express from 'express';
 import parseStories from './lib/parseStories';
+import parseTags from './lib/parseTags';
+import parseUser from './lib/parseUser';
+import parseComments from './lib/parseComments';
 
 const app = express();
 
@@ -41,8 +44,8 @@ app.get('/recent/:page*?', function(req, res) {
   });
 });
 
-app.get('/:page*?', function(req, res) {
-  let url = 'https://barnacl.es';
+app.get('/filter/:filter/:page*?', function(req, res) {
+  let url = `https://barnacl.es/t/${req.params.filter}`;
   request(`${url}/page/${req.params.page ? req.params.page : 1}`, function(
     error,
     response,
@@ -59,8 +62,50 @@ app.get('/:page*?', function(req, res) {
   });
 });
 
-app.get('/filter/:filter/:page*?', function(req, res) {
-  let url = `https://barnacl.es/t/${req.params.filter}`;
+app.get('/tags', function(req, res) {
+  let url = `https://barnacl.es/filters`;
+  request(url, function(error, response, html) {
+    if (error) {
+      return res.send({ error: true });
+    }
+    const $ = cheerio.load(html);
+
+    const tags = parseTags($);
+
+    res.send(tags);
+  });
+});
+
+app.get('/u/:userName', function(req, res) {
+  let url = `https://barnacl.es/u/${req.params.userName}`;
+  request(url, function(error, response, html) {
+    if (error) {
+      return res.send({ error: true });
+    }
+    const $ = cheerio.load(html);
+
+    const tags = parseUser($, req.params.userName);
+
+    res.send(tags);
+  });
+});
+
+app.get('/s/:id/:slug', function(req, res) {
+  let url = `https://barnacl.es/s/${req.params.id}/${req.params.slug}`;
+  request(url, function(error, response, html) {
+    if (error) {
+      return res.send({ error: true });
+    }
+    const $ = cheerio.load(html);
+
+    const tags = parseComments($);
+
+    res.send(tags);
+  });
+});
+
+app.get('/:page*?', function(req, res) {
+  let url = 'https://barnacl.es';
   request(`${url}/page/${req.params.page ? req.params.page : 1}`, function(
     error,
     response,
