@@ -1,12 +1,15 @@
 import cheerio from 'cheerio';
 import request from 'request';
 import express from 'express';
+import cors from 'cors';
 import parseStories from './lib/parseStories';
 import parseTags from './lib/parseTags';
 import parseUser from './lib/parseUser';
 import parseComments from './lib/parseComments';
 
 const app = express();
+
+app.use(cors());
 
 app.get('/top/:page*?', function(req, res) {
   let url = 'https://barnacl.es/top';
